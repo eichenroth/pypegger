@@ -5,7 +5,18 @@ class Rule:
     def __init__(self):
         self.memoizationDict = {}
 
-    def parse(self, string, start_pos):
+    def match(self, string):
+        if self.parse(string):
+            return True
+        return False
+
+    def match_whole(self, string):
+        parse_result = self.parse(string)
+        if parse_result and parse_result.end_pos == len(string):
+            return True
+        return False
+
+    def parse(self, string, start_pos = 0):
         return self.memoizationDict.setdefault((hash(string), start_pos), self._parse(string, start_pos))
 
     def _parse(self, string, start_pos):
