@@ -38,7 +38,11 @@ class Rule:
         :param start_pos: Starting position within the string.
         :return: The AST.
         """
-        return self.memoization_dict.setdefault((hash(string), start_pos), self._parse(string, start_pos))
+        key = (hash(string), start_pos)
+
+        if key in self.memoization_dict:
+            return self.memoization_dict[key]
+        return self.memoization_dict.setdefault(key, self._parse(string, start_pos))
 
     def _parse(self, string, start_pos):
         """
