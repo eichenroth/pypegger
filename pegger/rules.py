@@ -8,7 +8,7 @@ class Rule:
     """
 
     def __init__(self):
-        self.memoizationDict = {}
+        self.memoization_dict = {}
 
     def match(self, string):
         """
@@ -38,7 +38,7 @@ class Rule:
         :param start_pos: Starting position within the string.
         :return: The AST.
         """
-        return self.memoizationDict.setdefault((hash(string), start_pos), self._parse(string, start_pos))
+        return self.memoization_dict.setdefault((hash(string), start_pos), self._parse(string, start_pos))
 
     def _parse(self, string, start_pos):
         """

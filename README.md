@@ -18,4 +18,6 @@ This gets you a grammar able to checks if a string is in  the language of balanc
  - ast walker
  - generate custom ast nodes
  - testing
- - add helper rules, e.g. whitespace
+ - documentation
+ - add helper rules, e.g. Whitespace, Any, EndOfFile,
+ 
