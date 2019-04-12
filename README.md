@@ -2,8 +2,10 @@
 
     >>> from pegger import *
     >>>
-    >>> grammar = Choice()
-    >>> grammar.rules = [Sequence('(', grammar, ')', grammar), '']
+    >>> grammar = Choices()
+    >>> grammar.add_rule(Sequence('(', grammar, ')', grammar))
+    >>> grammar.add_rule('')
+    >>>
     >>> string = '(())()(((()))())(())'
     >>>
     >>> grammar.match_whole(string)
@@ -19,5 +21,5 @@ This gets you a grammar able to checks if a string is in  the language of balanc
  - generate custom ast nodes
  - testing
  - documentation
- - add helper rules, e.g. Whitespace, Any, EndOfFile,
+
  
