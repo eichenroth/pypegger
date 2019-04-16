@@ -63,6 +63,15 @@ class RuleCollection(Rule):
         super().__init__()
         self.rules = rules
 
+    def add_rule(self, rule):
+        assert isinstance(rule, Rule) or type(rule) == str
+        self._rules.append(String(rule) if type(rule) == str else rule)
+
+    def add_rules(self, *rules):
+        for rule in rules:
+            assert isinstance(rule, Rule) or type(rule) == str
+        self._rules.extend([String(rule) if type(rule) == str else rule for rule in rules])
+
     @property
     def rules(self):
         return self._rules
@@ -106,21 +115,52 @@ class String(Rule):
     def _parse(self, string, start_pos):
         if string[start_pos:start_pos + len(self.s)] == self.s:
             return ParsingSuccess(string, self.__class__, start_pos, start_pos + len(self.s), [])
-        else:
-            return False
+        return False
 
 
-class Choice(RuleCollection):
+class Range(Rule):
     """
-    Prioritized choice rule, e.g, `(A | B | C)`.
+    Range rule, e.g. `[1-9]`.
+    """
+
+    def __init__(self, start_symbol, end_symbol=None):
+        assert len(start_symbol) == 1
+        assert len(end_symbol) == 1 or end_symbol is None
+        super().__init__()
+        if end_symbol is None:
+            end_symbol = start_symbol
+
+        self.start_symbol_ord = ord(start_symbol)
+        self.end_symbol_ord = ord(end_symbol)
+
+    def _parse(self, string, start_pos):
+        char = string[start_pos:start_pos + 1]
+        if len(char) and self.start_symbol_ord <= ord(char) <= self.end_symbol_ord:
+            return ParsingSuccess(string, self.__class__, start_pos, start_pos + 1, [])
+        return False
+
+
+class Any(Rule):
+    """
+    Rule that matches any symbol, e.g. `.`.
+    """
+
+    def _parse(self, string, start_pos):
+        if start_pos < len(string):
+            return ParsingSuccess(string, self.__class__, start_pos, start_pos + 1, [])
+        return False
+
+
+class Choices(RuleCollection):
+    """
+    Prioritized choice rule, e.g. `(A | B | C)`.
     """
 
     def _parse(self, string, start_pos):
         for rule in self.rules:
             rule_result = rule.parse(string, start_pos)
             if rule_result:
-                ParsingSuccess(string, self.__class__, start_pos, rule_result.end_pos, rule_result)
-                return rule_result
+                return ParsingSuccess(string, self.__class__, start_pos, rule_result.end_pos, [rule_result])
         return False
 
 
@@ -137,8 +177,8 @@ class Sequence(RuleCollection):
             if rule_result:
                 children.append(rule_result)
                 pos = rule_result.end_pos
-            else:
-                return False
+                continue
+            return False
         return ParsingSuccess(string, self.__class__, start_pos, pos, children)
 
 
@@ -178,8 +218,8 @@ class ZeroOrMore(RuleWrapper):
             if rule_result:
                 children.append(rule_result)
                 pos = rule_result.end_pos
-            else:
-                break
+                continue
+            break
         return ParsingSuccess(string, self.__class__, start_pos, pos, children)
 
 
@@ -199,8 +239,7 @@ class OneOrMore(RuleWrapper):
             zero_or_more_result = self.zero_or_more_rule.parse(string, rule_result.end_pos)
             if zero_or_more_result:
                 return ParsingSuccess(string, self.__class__, start_pos, zero_or_more_result.end_pos, [rule_result] + zero_or_more_result.children)
-            else:
-                return ParsingSuccess(string, self.__class__, start_pos, rule_result.end_pos, [rule_result])
+            return ParsingSuccess(string, self.__class__, start_pos, rule_result.end_pos, [rule_result])
         return False
 
 
@@ -213,5 +252,4 @@ class Optional(RuleWrapper):
         rule_result = self.rule.parse(string, start_pos)
         if rule_result:
             return ParsingSuccess(string, self.__class__, start_pos, rule_result.end_pos, [rule_result])
-        else:
-            return ParsingSuccess(string, self.__class__, start_pos, start_pos, [])
+        return ParsingSuccess(string, self.__class__, start_pos, start_pos, [])

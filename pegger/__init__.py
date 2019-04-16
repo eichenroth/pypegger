@@ -1,1 +1,1 @@
-from .rules import String, Choice, Sequence, And, Not, ZeroOrMore, OneOrMore, Optional
+from .rules import String, Choices, Sequence, And, Not, ZeroOrMore, OneOrMore, Optional
