@@ -2,7 +2,6 @@ from pegger import *
 
 
 class RuleRepresentation:
-
     def __init__(self, rule):
         self.rule_nonterminals = {rule: 'A'}
         self.rule_representations = {}
@@ -17,42 +16,33 @@ class RuleRepresentation:
         if rule in self.rule_representations:
             return self.rule_representations[rule]
 
-        def string_rep(rule):
-            return f'"{rule.s}"'
+        method = 'rep_' + rule.__class__.__name__
+        representor = getattr(self, method)
+        return self.rule_representations.setdefault(rule, representor(rule))
 
-        def choice_rep(rule):
-            return ' | '.join([self._generate_nonterminal(sub_rule)[0] for sub_rule in rule.rules])
+    def rep_String(self, rule):
+        return f'"{rule.s}"'
 
-        def sequence_rep(rule):
-            return ' '.join([self._generate_nonterminal(sub_rule)[0] for sub_rule in rule.rules])
+    def rep_Choices(self, rule):
+        return ' | '.join([self._generate_nonterminal(sub_rule)[0] for sub_rule in rule.rules])
 
-        def and_rep(rule):
-            return f'&{self._generate_nonterminal(rule.rule)}'
+    def rep_Sequence(self, rule):
+        return ' '.join([self._generate_nonterminal(sub_rule)[0] for sub_rule in rule.rules])
 
-        def not_rep(rule):
-            return f'&{self._generate_nonterminal(rule.rule)}'
+    def rep_And(self, rule):
+        return f'&{self._generate_nonterminal(rule.rule)}'
 
-        def zero_or_more_rep(rule):
-            return f'{self._generate_nonterminal(rule.rule)}*'
+    def rep_Not(self, rule):
+        return f'&{self._generate_nonterminal(rule.rule)}'
 
-        def one_or_more_rep(rule):
-            return f'{self._generate_nonterminal(rule.rule)}+'
+    def rep_ZeroOrMore(self, rule):
+        return f'{self._generate_nonterminal(rule.rule)}*'
 
-        def optional_rep(rule):
-            return f'{self._generate_nonterminal(rule.rule)}?'
+    def rep_OneOrMore(self, rule):
+        return f'{self._generate_nonterminal(rule.rule)}+'
 
-        method = {
-            String: string_rep,
-            Choices: choice_rep,
-            Sequence: sequence_rep,
-            And: and_rep,
-            Not: not_rep,
-            ZeroOrMore: zero_or_more_rep,
-            OneOrMore: one_or_more_rep,
-            Optional: optional_rep,
-        }[type(rule)]
-
-        return self.rule_representations.setdefault(rule, method(rule))
+    def rep_Optional(self, rule):
+        return f'{self._generate_nonterminal(rule.rule)}?'
 
     def _generate_nonterminal(self, rule):
         if rule in self.rule_nonterminals:
@@ -69,47 +59,6 @@ class RuleRepresentation:
         for key, value in self.rule_nonterminals.items():
             result = f'{result}\n{value} <- {self.rule_representations[key]}'
         return result
-
-
-
-    ## string
-
-    # def _generate_rep(self, nonterminals):
-    #     symbol = chr(nonterminals['last_symbol_code'] + 1)
-    #     return nonterminals.setdefault(self, (symbol, f'"{self.s}"'))
-
-    ## allgemein
-
-    # def __str__(self):
-    #     """
-    #     Generates the string representation of the grammar following the PEG notation.
-    #     :return: String representation.
-    #     """
-    #     nonterminals = {'last_symbol_code': ord('A') - 1}
-    #     self._generate_rep(nonterminals)
-    #     rule_reps = []
-    #     for key, value in nonterminals.items():
-    #         if isinstance(key, Rule):
-    #             rule_reps.append(f'<{value[0]}> := {value[1]}')
-    #     return '\n'.join(rule_reps)
-    #
-    # def _generate_rep(self, nonterminals):
-    #     raise NotImplementedError
-
-
-
-
-
-
-
-
-def generate_grammar(grammar_string):
-    pass
-
-
-
-
-
 
 # One Rule per line
 #
