@@ -65,13 +65,15 @@ class Rule:
         return String(rule) if isinstance(rule, str) else rule
 
 
+class AliasHasNoRuleException(Exception):
+    pass
+
+
 class RuleAlias(Rule):
     """
     Alias for a rule. Contains a rule name and contain the rule that it aliases.
+    Note: It is possible but strictly not recommended to have multiple aliases with the same name.
     """
-
-    class AliasHasNoRuleException(Exception):
-        pass
 
     def __init__(self, name, rule=None):
         super().__init__()
@@ -102,6 +104,7 @@ class RuleCollection(Rule):
 
     def __init__(self, *rules):
         super().__init__()
+        self._rules = []
         self.rules = rules
 
     def add_rule(self, rule):
@@ -162,7 +165,7 @@ class Range(Rule):
 
     def __init__(self, start_symbol, end_symbol=None):
         assert len(start_symbol) == 1
-        assert len(end_symbol) == 1 or end_symbol is None
+        assert end_symbol is None or len(end_symbol) == 1
         super().__init__()
         if end_symbol is None:
             end_symbol = start_symbol
