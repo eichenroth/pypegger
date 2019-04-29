@@ -12,7 +12,7 @@
     True
 
 We just defined a grammar that can detect if a string of chars consists of well-formed parenthesis.  
-The same could be acchived with the following textual definition:
+The same could be achieved with the following textual definition:
 
     >>> from pegger.grammar_parser import generate_grammar
     >>>
