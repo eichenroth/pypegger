@@ -53,6 +53,47 @@ class Rule:
         """
         raise NotImplementedError
 
+    @staticmethod
+    def cast_rule(rule):
+        """
+        Static method which asserts if a rule is either a rule or can be processed as a rule.
+        Casts the given object to a Rule object.
+        :param rule: The object to check.
+        :return: The Rule object.
+        """
+        assert isinstance(rule, Rule) or isinstance(rule, str)
+        return String(rule) if isinstance(rule, str) else rule
+
+
+class RuleAlias(Rule):
+    """
+    Alias for a rule. Contains a rule name and contain the rule that it aliases.
+    """
+
+    class AliasHasNoRuleException(Exception):
+        pass
+
+    def __init__(self, name, rule=None):
+        super().__init__()
+        self.name = name
+        if rule is None:
+            self._rule = None
+        else:
+            self.rule = rule
+
+    @property
+    def rule(self):
+        return self._rule
+
+    @rule.setter
+    def rule(self, rule):
+        self._rule = self.cast_rule(rule)
+
+    def _parse(self, string, start_pos):
+        if self.rule is None:
+            raise self.AliasHasNoRuleException()
+        return self.rule.parse(string, start_pos)
+
 
 class RuleCollection(Rule):
     """
@@ -64,13 +105,11 @@ class RuleCollection(Rule):
         self.rules = rules
 
     def add_rule(self, rule):
-        assert isinstance(rule, Rule) or type(rule) == str
-        self._rules.append(String(rule) if type(rule) == str else rule)
+        self._rules.append(self.cast_rule(rule))
 
     def add_rules(self, *rules):
         for rule in rules:
-            assert isinstance(rule, Rule) or type(rule) == str
-        self._rules.extend([String(rule) if type(rule) == str else rule for rule in rules])
+            self._rules.append(self.cast_rule(rule))
 
     @property
     def rules(self):
@@ -79,8 +118,7 @@ class RuleCollection(Rule):
     @rules.setter
     def rules(self, rules):
         for rule in rules:
-            assert isinstance(rule, Rule) or type(rule) == str
-        self._rules = [String(rule) if type(rule) == str else rule for rule in rules]
+            self._rules.append(self.cast_rule(rule))
 
 
 class RuleWrapper(Rule):
@@ -98,8 +136,7 @@ class RuleWrapper(Rule):
 
     @rule.setter
     def rule(self, rule):
-        assert isinstance(rule, Rule) or type(rule) == str
-        self._rule = String(rule) if type(rule) == str else rule
+        self._rule = self.cast_rule(rule)
 
 
 class String(Rule):
