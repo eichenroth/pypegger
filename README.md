@@ -1,25 +1,29 @@
-# Pegger - small PEG parsing tool
+[![build-status](https://img.shields.io/travis/friedrichschoene/pegger.svg)](https://travis-ci.org/friedrichschoene/pegger)
+![license](https://img.shields.io/github/license/friedrichschoene/pegger.svg)
+
+# Pegger - a small PEG Parsing Tool
 
     >>> from pegger import *
     >>>
-    >>> grammar = Choices()
-    >>> grammar.add_rule(Sequence('(', grammar, ')', grammar))
-    >>> grammar.add_rule('')
+    >>> A = RuleAlias('A')
+    >>> A.rule = Choices(Sequence('(', A, ')', A), '')
     >>>
-    >>> string = '(())()(((()))())(())'
-    >>>
-    >>> grammar.match_whole(string)
+    >>> A.match_whole('()(()(()))()')
     True
 
-This gets you a grammar able to checks if a string is in  the language of balanced parentheses (each opening parenthesis has a closing one.)
+We just defined a grammar that can detect if a string of chars consists of well-formed parenthesis.  
+The same could be acchived with the following textual definition:
+
+    >>> from pegger.grammar_parser import generate_grammar
+    >>>
+    >>> grammar = generate_grammar('<A> := "(" <A> ")" <A> / ""')
+    >>>
+    >>> A.match_whole('()(()(()))()')
+    True
+
+Have a look on [all the rules](docs/grammar.md) for grammar generation.
 
 ## Todo
- - parsing of grammar given as string
  - solve left recursion
  - clean memoization cache
- - ast walker
- - generate custom ast nodes
- - testing
- - documentation
-
- 
+ - ast walker & custom nodes
