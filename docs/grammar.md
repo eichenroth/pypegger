@@ -78,40 +78,40 @@ As seen in the first example you also can use a grammar definition as string
 The grammar can be defined using its own syntax. The grammar is defined very closely to the grammar of [the first PEG pager by Bryan Ford](https://dl.acm.org/citation.cfm?id=964011).
 
     # Hierarchical syntax
-    Grammar     := Spacing Definition+ EndOfFile
-    Definition  := Identifier ASSIGN Expression
-    Expression  := Sequence (SLASH Sequence)*
-    Sequence    := Prefix*
-    Prefix      := (AND / NOT)? Suffix
-    Suffix      := Primary (QUESTION / STAR / PLUS)?
-    Primary     := Identifier !ASSIGN
-                   / OPEN Expression CLOSE
-                   / Literal
-                   / Class
-                   / DOT
+    <Grammar>     := <Spacing> <Definition>+ <EndOfFile>
+    <Definition>  := <Identifier> <ASSIGN> <Expression>
+    <Expression>  := <Sequence> (<SLASH> <Sequence>)*
+    <Sequence>    := <Prefix>*
+    <Prefix>      := (<AND> / <NOT>)? <Suffix>
+    <Suffix>      := <Primary> (<QUESTION> / <STAR> / <PLUS>)?
+    <Primary>     := <Identifier> !<ASSIGN>
+                   / <OPEN> <Expression> <CLOSE>
+                   / <Literal>
+                   / <Class>
+                   / <DOT>
 
     # Lexical syntax
-    Identifier  := '<' IdentStart IdentCont* '>' Spacing
-    IdentStart  := [a-zA-Z_]
-    IdentCont   := IdentStart / [0-9]
-    Literal     := ['] (!['] Char)* ['] Spacing
-                   / ["] (!["] Char)* ["] Spacing
-    Class       := '[' (!']' Range)* ']' Spacing
-    Range       := Char '-' Char / Char
-    Char        := '\\' [nrt'"\[\]\\]
+    <Identifier>  := '<' <IdentStart> <IdentCont>* '>' <Spacing>
+    <IdentStart>  := [a-zA-Z_]
+    <IdentCont>   := <IdentStart> / [0-9]
+    <Literal>     := ['] (!['] <Char>)* ['] <Spacing>
+                   / ["] (!["] <Char>)* ["] <Spacing>
+    <Class>       := '[' (!']' <Range>)* ']' <Spacing>
+    <Range>       := <Char> '-' <Char> / <Char>
+    <Char>        := '\\' [nrt'"\[\]\\]
                    / !'\\' .
-    ASSIGN      := ':=' Spacing
-    SLASH       := '/' Spacing
-    AND         := '&' Spacing
-    NOT         := '!' Spacing
-    QUESTION    := '?' Spacing
-    STAR        := '*' Spacing
-    PLUS        := '+' Spacing
-    OPEN        := '(' Spacing
-    CLOSE       := ')' Spacing
-    DOT         := '.' Spacing
-    Spacing     := (Space / Comment)*
-    Comment     := '#' (!(EndOfLine / EndOfFile) .)* EndOfLine
-    Space       := ' ' / '\t' / EndOfLine
-    EndOfLine   := '\r\n' / '\n' / '\r'
-    EndOfFile   := !.
+    <ASSIGN>      := ':=' <Spacing>
+    <SLASH>       := '/' <Spacing>
+    <AND>         := '&' <Spacing>
+    <NOT>         := '!' <Spacing>
+    <QUESTION>    := '?' <Spacing>
+    <STAR>        := '*' <Spacing>
+    <PLUS>        := '+' <Spacing>
+    <OPEN>        := '(' <Spacing>
+    <CLOSE>       := ')' <Spacing>
+    <DOT>         := '.' <Spacing>
+    <Spacing>     := (<Space> / <Comment>)*
+    <Comment>     := '#' (!(<EndOfLine> / <EndOfFile>) .)* <EndOfLine>
+    <Space>       := ' ' / '\t' / <EndOfLine>
+    <EndOfLine>   := '\r\n' / '\n' / '\r'
+    <EndOfFile>   := !.
