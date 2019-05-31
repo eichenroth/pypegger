@@ -22,8 +22,3 @@ The same could be achieved with the following textual definition:
     True
 
 Have a look on [all the rules](docs/grammar.md) for grammar generation.
-
-## Todo
- - solve left recursion
- - clean memoization cache
- - ast walker & custom nodes
