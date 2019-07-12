@@ -10,27 +10,6 @@ class Rule:
     def __init__(self):
         self.memoization_dict = {}
 
-    def match(self, string):
-        """
-        Check if a prefix of a string matches the grammar defined by this rule.
-        :param string: The string to match.
-        :return: Boolean whether the string prefix matches or not.
-        """
-        if self.parse(string):
-            return True
-        return False
-
-    def match_whole(self, string):
-        """
-        Check if a whole string matches the grammar defined by this rule.
-        :param string: The string to match.
-        :return: Boolean whether the string matches or not.
-        """
-        parse_result = self.parse(string)
-        if parse_result and parse_result.end_pos == len(string):
-            return True
-        return False
-
     def parse(self, string, start_pos = 0):
         """
         Parses an input string to an abstract syntax tree.

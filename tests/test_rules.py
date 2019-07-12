@@ -1,5 +1,6 @@
 import pytest
 
+from pegger.grammar import Grammar
 from pegger.rules import *
 
 
@@ -12,7 +13,7 @@ def test_grammar():
     B.add_rules(Sequence('b', B, 'c'), 'bc')
     D = Choices(Not(Any()),  Sequence(And(Sequence(A, Not('b'))), ZeroOrMore('a'), B, Not(Any())))
 
-    grammar = D
+    grammar = Grammar(D)
     assert grammar.match_whole('')
     assert grammar.match_whole('aaabbbccc')
     assert grammar.match_whole('aaaaaabbbbbbcccccc')

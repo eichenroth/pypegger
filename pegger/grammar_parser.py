@@ -1,5 +1,6 @@
 # Pairs are used as parsing success objects.
 # They consist of a parsing result object (which can be a Boolean) and an end_pos element.
+from pegger.grammar import Grammar
 from . import RuleAlias, String, Range, Any, Choices, Sequence, And, Not, ZeroOrMore, OneOrMore, Optional
 
 
@@ -7,14 +8,14 @@ class GrammarDefinitionNotParsableException(Exception):
     pass
 
 def generate_grammar(string):
-    parsed_grammar = _grammar(string, 0)
-    if not parsed_grammar:
+    base_rule = _grammar(string, 0)
+    if not base_rule:
         raise GrammarDefinitionNotParsableException()
 
     # create alias to rule dict
     aliases = {}
     visited = set()
-    for alias, rule in parsed_grammar[0]:
+    for alias, rule in base_rule[0]:
         alias.rule = rule
         aliases[alias.name] = alias
 
@@ -22,7 +23,7 @@ def generate_grammar(string):
         _replace_aliases(alias.rule, aliases, visited)
 
     # return first alias
-    return aliases[parsed_grammar[0][0][0].name]
+    return Grammar(aliases[base_rule[0][0][0].name])
 
 def _replace_aliases(rule, aliases, visited):
     if rule in visited:
